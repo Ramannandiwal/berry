@@ -7,7 +7,7 @@ import {connect} from "../../../dbConfig/mongoDb";
 
 export async function POST(request: NextRequest) {
     try {
-        connect();
+       await connect();
         const { email, password } = await request.json() as { email: string, password: string };
         const user = await UserModel.findOne({ email: email });
 

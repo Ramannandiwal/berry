@@ -43,7 +43,7 @@ function Login() {
 
      const data =  await axios.post("/api/login",obj);
      toast.success("User logged in successfully");
-     console.log(data);
+
      router.push('/');
 
    }catch (error){

@@ -8,9 +8,9 @@ import {Buffer} from "node:buffer";
 import {join} from "path";
 import {writeFile} from "node:fs/promises";
 
-export async function POST(req:NextResponse,res:NextRequest){
+export async function POST(req:NextRequest){
     try {
-        connect();
+      await  connect();
         const formData = await req.formData();
       const name = formData.get("name");
       const email = formData.get("email");
@@ -23,7 +23,7 @@ export async function POST(req:NextResponse,res:NextRequest){
         await writeFile(filePath, buffer);
 
 
-        const saveavatar = `http://localhost:3001/${filePath.toString().split('public')[1]}`
+        const saveavatar = `${filePath.toString().split('public')[1]}`
 
         const user = new UserModel({name,email,password:hashedPasswowrd,Avatar:saveavatar});
         const result = await user.save();

@@ -1,13 +1,10 @@
-'use client'
-
+"use client"
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import ChartUser from "../Component/ChartUser";
-
-
 
 // Define User interface for TypeScript
 interface User {
@@ -19,6 +16,7 @@ interface User {
 // Home component as default export
 export default function Home() {
     const router = useRouter();
+    const [route, setRoute] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
 
     // Function to handle logout
@@ -28,28 +26,32 @@ export default function Home() {
             toast.success("Logout successfully");
             router.push("/login");
         } catch (error) {
-            console.error("Error logging out:", error);
+
             toast.error("Failed to logout");
         }
     }
 
     // Fetch user data on component mount
     useEffect(() => {
+        if (typeof window !== "undefined") {
+            setRoute(window.location.href);
+        }
+
         const fetchUserData = async () => {
             try {
                 const response = await axios.post("/api/me");
+
+
                 setUser(response.data.user);
-            } catch (error) {
+            } catch (error: any) { // Ensure the error is typed correctly
                 console.error("Error fetching user data:", error);
                 toast.error("Failed to fetch user data");
+
             }
         };
 
         fetchUserData();
     }, []);
-
-    // UseLayoutEffect to initialize the chart
-
 
     // Render JSX for the component
     return (
@@ -92,7 +94,14 @@ export default function Home() {
                             <div className="bg-white rounded-xl shadow-md p-6">
                                 <div className="flex items-center">
                                     <div className="w-20 h-20 mr-4 rounded-full overflow-hidden relative">
-                                        <Image src={user.Avatar} alt="Avatar Image" layout="fill" objectFit="cover" />
+                                        {route && (
+                                            <Image
+                                                src={`${route}${user.Avatar}`}
+                                                alt="Avatar Image"
+                                                layout="fill"
+                                                objectFit="cover"
+                                            />
+                                        )}
                                     </div>
                                     <div>
                                         <h1 className="text-3xl font-bold">{user.name}</h1>
@@ -103,8 +112,7 @@ export default function Home() {
 
                             {/* Chart Section */}
                             <div className="mt-8 bg-white rounded-xl shadow-md p-6">
-                               <ChartUser/>
-
+                                <ChartUser />
                             </div>
                         </div>
                     </main>
