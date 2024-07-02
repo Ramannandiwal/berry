@@ -54,6 +54,7 @@ export default function Home() {
     }, []);
 
     // Render JSX for the component
+    // @ts-ignore
     return (
         <div className="h-screen w-screen flex flex-col">
             <Toaster />
@@ -93,10 +94,11 @@ export default function Home() {
                         <div className="max-w-4xl mx-auto">
                             <div className="bg-white rounded-xl shadow-md p-6">
                                 <div className="flex items-center">
+
                                     <div className="w-20 h-20 mr-4 rounded-full overflow-hidden relative">
                                         {route && (
                                             <Image
-                                                src={`${route}${user.Avatar}`}
+                                                src={`${user.Avatar}`}
                                                 alt="Avatar Image"
                                                 layout="fill"
                                                 objectFit="cover"

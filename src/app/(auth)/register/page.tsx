@@ -6,7 +6,11 @@ import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+interface AvatarFile {
+  name: string;
 
+  // Add more properties as needed
+}
 function Register() {
   const router = useRouter();
 
@@ -16,8 +20,8 @@ function Register() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [avatar, setAvatar] = useState(null); // State to hold the selected file
-
+  const [avatar, setAvatar] = useState<AvatarFile | null>(null); // State to hold the selected file
+ const [Files,setFile]=useState(false);
   const handleFirstNameChange = (e) => {
     setFirstName(e.target.value);
   };
@@ -25,6 +29,12 @@ function Register() {
   const handleLastNameChange = (e) => {
     setLastName(e.target.value);
   };
+  const handleClearFile = () => {
+    setAvatar(null);
+    setFile(false);
+    // Clear the selected file
+  };
+
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -36,7 +46,10 @@ function Register() {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+
     setAvatar(file);
+    console.log(avatar)
+    setFile(true);
   };
 
   const handleSubmit = async () => {
@@ -51,7 +64,7 @@ function Register() {
 
     try {
       const formData = new FormData();
-      formData.append("avatar", avatar); // Append the file to FormData
+      formData.append("avatar", avatar as unknown as Blob, avatar.name); // Append the file to FormData
       formData.append("email", email);
       formData.append("password", password);
       formData.append("name", `${firstName} ${lastName}`);
@@ -68,6 +81,7 @@ function Register() {
       toast.error(error.message, { duration: 1300 });
     }
   };
+
 
   return (
       <div className="bg-[#eef2f6] h-screen w-screen flex justify-center items-center">
@@ -206,37 +220,55 @@ function Register() {
             </div>
           </div>
           {/* File Upload Section */}
-          <div className="flex items-center justify-center w-full">
-            <label
-                htmlFor="avatar-upload"
-                className="flex mb-5 w-[90%] flex-col items-center justify-center  h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-            >
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <svg
-                    className="w-8 h-8 mb-4 text-gray-500"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 16"
-                >
-                  {/* SVG Path */}
-                </svg>
-                <p className="mb-2 text-sm text-gray-500">
-                  <span className="font-semibold">Click </span> or drag
-                  to upload your Avatar Picture
-                </p>
-                <p className="text-xs text-gray-500">
-                  SVG, PNG, JPG or GIF
-                </p>
-              </div>
-              <input
-                  id="avatar-upload"
-                  type="file"
-                  className="hidden"
-                  onChange={(e) => handleFileChange(e)}
-              />
-            </label>
-          </div>
+          {
+            Files ? (
+                <div className="flex items-center justify-center w-full m-3">
+                  <div className="flex flex-col items-center justify-center w-[90%] h-32 border-2 border-gray-300 border-solid rounded-lg overflow-hidden bg-gray-100">
+                    {/* Display the selected file information */}
+                    <p className="text-sm text-blue-600 font-bold px-4 py-2 truncate">
+
+                      Selected File: {avatar?.name} {/* Assuming Files is the selected file object */}
+                    </p>
+                    <button
+                        className=" text-white bg-blue-700 p-3 font-bold mt-2 rounded-md focus:outline-none"
+                        onClick={() => handleClearFile()} // Implement handleClearFile function to clear the selected file
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+            ) : (
+                <div className="flex items-center justify-center w-full m-3">
+                  <label
+                      htmlFor="avatar-upload"
+                      className="flex flex-col items-center justify-center w-[90%] h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg
+                          className="w-8 h-8 mb-4 text-gray-500"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 20 16"
+                      >
+                        {/* SVG Path */}
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500">
+                        <span className="font-semibold">Click </span> or drag to upload your Avatar Picture
+                      </p>
+                      <p className="text-xs text-gray-500">SVG, PNG, JPG or GIF</p>
+                    </div>
+                    <input
+                        id="avatar-upload"
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => handleFileChange(e)}
+                    />
+                  </label>
+                </div>
+            )
+          }
+
           {/* End of File Upload Section */}
           <div className="w-full flex items-center justify-center">
             <button
